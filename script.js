@@ -98,17 +98,46 @@ function getItemsFromStorage(){
     return itemsFromStoage;
 }
 
-function removeItem(e)
+function onClickItem(e)
 {
     if(e.target.parentElement.classList.contains('remove-item'))
     {
-        if(confirm('Are you Sure you Want to delete the item?'))
-        {
-            e.target.parentElement.parentElement.remove();
-        }
-        
+        removeItem(e.target.parentElement.parentElement);
+    }    
+}
+
+function removeItem(item)
+{
+    if(confirm('Are u sure ?'))
+    {
+        //Remove Item form DOM
+        item.remove();
+
+        //Remove Item from Storage
+        removeItemsFromStorage(item.textContent);
+
+        checkUI();
     }
-    checkUI();
+    // if(e.target.parentElement.classList.contains('remove-item'))
+    // {
+    //     if(confirm('Are you Sure you Want to delete the item?'))
+    //     {
+    //         e.target.parentElement.parentElement.remove();
+    //     }
+        
+    // }
+    // checkUI();
+}
+
+function removeItemsFromStorage(item)
+{
+    let itemsFromStoage=getItemsFromStorage();
+
+    //Filter Items from Storage
+    itemsFromStoage = itemsFromStoage.filter((i)=> i!==item);
+
+    //Reset the Items
+    localStorage.setItem('items',JSON.stringify(itemsFromStoage));
 }
 
 function removeAllItems(e)
@@ -120,10 +149,13 @@ function removeAllItems(e)
     if(confirm('Are u sure u want to clear All Items????'))
     {
         while(itemList.firstChild)
-    {
-        itemList.removeChild(itemList.firstChild);  
+        {
+            itemList.removeChild(itemList.firstChild);  
+        }
     }
-    }
+
+    //Clear From Local Storage 
+    localStorage.removeItem('items')
     
     checkUI();
 }
@@ -168,7 +200,7 @@ function init()
 {
     //EVENT LISTNERS
 itemForm.addEventListener('submit',onAddItemSubmit);
-itemList.addEventListener('click',removeItem);
+itemList.addEventListener('click',onClickItem);
 itemClear.addEventListener('click',removeAllItems);
 itemFilter.addEventListener('input',filterItems);
 document.addEventListener('DOMContentLoaded',displayItems);
