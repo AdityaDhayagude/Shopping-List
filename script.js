@@ -5,29 +5,30 @@ const itemClear = document.getElementById('clear');
 const itemFilter = document.getElementById('filter')
 
 
+function displayItems()
+{
+    const itemsFromStoage =getItemsFromStorage();
+    itemsFromStoage.forEach((item)=>addItemToDom(item));
 
+    checkUI();
+}
 
-function addItem(e)
+function onAddItemSubmit(e)
 {
     e.preventDefault();
 
     const newItem = itemInput.value;
     //Validate Input
-    if(itemInput.value==='')
+    if(newItem==='')
     {
         alert('Please add an item'); 
         return;
     }
 
-    //Create List Item
-    const li=document.createElement('li');
-    li.appendChild(document.createTextNode(newItem));
+    addItemToDom(newItem);
 
-    const button = createButton('remove-item btn-link text-red');
-    li.appendChild(button);
-
-    //Add li to ul
-    itemList.appendChild(li);
+    //Adding item to storage 
+    addItemToStorage(newItem);
 
     //Check UI
     checkUI();
@@ -36,6 +37,22 @@ function addItem(e)
     itemInput.value='';
 
 }
+
+
+
+function addItemToDom(item){
+    //Create List Item
+    const li=document.createElement('li');
+    li.appendChild(document.createTextNode(item));
+
+    const button = createButton('remove-item btn-link text-red');
+    li.appendChild(button);
+
+    //Add li to ul
+    itemList.appendChild(li);
+}
+
+
 
 function createButton(classes)
 {
@@ -54,6 +71,33 @@ function createIcon(classes)
     return icon ;
 }
 
+function addItemToStorage(item){
+
+    const itemsFromStoage=getItemsFromStorage();
+
+    //Add new items to local storage
+    itemsFromStoage.push(item);
+
+    //Convert to JSON string and set to Local Storage
+    localStorage.setItem('items',JSON.stringify(itemsFromStoage));
+
+}
+
+function getItemsFromStorage(){
+    let itemsFromStoage;
+
+    //Checking if Local Storage already has items
+    if(localStorage.getItem('items')===null)
+    {
+        itemsFromStoage=[];
+    }
+    else{
+        itemsFromStoage=JSON.parse(localStorage.getItem('items'));
+    }
+
+    return itemsFromStoage;
+}
+
 function removeItem(e)
 {
     if(e.target.parentElement.classList.contains('remove-item'))
@@ -64,6 +108,7 @@ function removeItem(e)
         }
         
     }
+    checkUI();
 }
 
 function removeAllItems(e)
@@ -119,10 +164,16 @@ function checkUI()
 
 }
 
-//EVENT LISTNERS
-itemForm.addEventListener('submit',addItem);
+function init()
+{
+    //EVENT LISTNERS
+itemForm.addEventListener('submit',onAddItemSubmit);
 itemList.addEventListener('click',removeItem);
 itemClear.addEventListener('click',removeAllItems);
 itemFilter.addEventListener('input',filterItems);
+document.addEventListener('DOMContentLoaded',displayItems);
 
 checkUI();
+}
+
+init();
