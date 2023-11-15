@@ -9,8 +9,8 @@ let isEditMode = false;
 
 function displayItems()
 {
-    const itemsFromStoage =getItemsFromStorage();
-    itemsFromStoage.forEach((item)=>addItemToDom(item));
+    const itemsFromStorage =getItemsFromStorage();
+    itemsFromStorage.forEach((item)=>addItemToDom(item));
 
     checkUI();
 }
@@ -48,6 +48,13 @@ if(isEditMode)
     itemToEdit.classList.remove('edit-mode');
     itemToEdit.remove();
     isEditMode=false;
+}else
+{
+    if(checkIfItemsExist())
+    {
+        alert('That Items Already Exists');
+        return;
+    }
 }
 
 function addItemToDom(item){
@@ -83,29 +90,29 @@ function createIcon(classes)
 
 function addItemToStorage(item){
 
-    const itemsFromStoage=getItemsFromStorage();
+    const itemsFromStorage=getItemsFromStorage();
 
     //Add new items to local storage
-    itemsFromStoage.push(item);
+    itemsFromStorage.push(item);
 
     //Convert to JSON string and set to Local Storage
-    localStorage.setItem('items',JSON.stringify(itemsFromStoage));
+    localStorage.setItem('items',JSON.stringify(itemsFromStorage));
 
 }
 
 function getItemsFromStorage(){
-    let itemsFromStoage;
+    let itemsFromStorage;
 
     //Checking if Local Storage already has items
     if(localStorage.getItem('items')===null)
     {
-        itemsFromStoage=[];
+        itemsFromStorage=[];
     }
     else{
-        itemsFromStoage=JSON.parse(localStorage.getItem('items'));
+        itemsFromStorage=JSON.parse(localStorage.getItem('items'));
     }
 
-    return itemsFromStoage;
+    return itemsFromStorage;
 }
 
 function onClickItem(e)
@@ -117,6 +124,12 @@ function onClickItem(e)
     else{
         setItemToEdit(e.target);
     }    
+}
+
+function checkIfItemsExist()
+{
+    const itemsFromStorage=getItemsFromStorage();
+    return itemsFromStorage.includes(item);
 }
 
 function setItemToEdit(item)
@@ -156,13 +169,13 @@ function removeItem(item)
 
 function removeItemsFromStorage(item)
 {
-    let itemsFromStoage=getItemsFromStorage();
+    let itemsFromStorage=getItemsFromStorage();
 
     //Filter Items from Storage
-    itemsFromStoage = itemsFromStoage.filter((i)=> i!==item);
+    itemsFromStorage = itemsFromStorage.filter((i)=> i!==item);
 
     //Reset the Items
-    localStorage.setItem('items',JSON.stringify(itemsFromStoage));
+    localStorage.setItem('items',JSON.stringify(itemsFromStorage));
 }
 
 function removeAllItems(e)
